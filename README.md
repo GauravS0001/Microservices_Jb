@@ -1,135 +1,73 @@
-Microservices Demo — User Management, Notifications, and Analytics
-This project demonstrates a clean microservices-based architecture using Spring Boot. It includes three independent services — User Service, Notification Service, and Analytics Service — each designed to handle a specific business responsibility. The system is built to reflect real production patterns such as modularity, asynchronous processing, and inter-service communication.
+# Microservices Architecture: User Management, Notifications, and Analytics (Spring Boot)
 
-Services Overview
-Service	Description	Port
-user-service	Handles user operations. Triggers notifications and logging.	8081
-notification-service	Accepts requests to send simulated notifications.	8082
-analytics-service	Logs user activity events to an in-memory DB.	8083
+This project demonstrates a production-style microservices architecture using Spring Boot. It features three independent services — `user-service`, `notification-service`, and `analytics-service` — designed to simulate real-world backend modularity, scalability, and fault tolerance.
 
-Each service is a fully standalone Spring Boot application with its own configuration, REST API, and domain logic.
+Each service is independently runnable, communicates via HTTP using `RestTemplate`, and is structured with best practices like clean layered architecture, async processing, exception handling, and in-memory persistence for fast iteration.
 
-Technologies Used
-Java 17
+## Tech Stack
 
-Spring Boot 3.x
+- Java 17  
+- Spring Boot 3.x  
+- Spring Web, Spring Data JPA  
+- Spring Async (`@Async`)  
+- H2 In-Memory Database  
+- RestTemplate (HTTP inter-service communication)  
+- Swagger (OpenAPI Docs)  
 
-Spring Web, Spring Data JPA, Spring Async
+## Features
 
-H2 In-Memory Database
+### 🧩 Microservices Breakdown
 
-RestTemplate for inter-service calls
+#### user-service
+- Handles user creation and updates  
+- Triggers notification and analytics events after user creation  
+- Validates input and ensures email uniqueness  
 
-Swagger/OpenAPI for API documentation
+#### notification-service
+- Simulates email/SMS notifications  
+- Asynchronous notification dispatch via `@Async`  
+- Logs message details to the console  
 
-Maven for build
+#### analytics-service
+- Accepts user activity logs from external services  
+- Persists event logs to an H2 database  
+- Auto-timestamps events with JPA auditing  
 
-Docker-ready structure (optional)
+## Architecture
 
-System Architecture
-Data flow when a user is created:
+Client
+↓
+user-service
+├── POST /api/users
+├── → notification-service (send notification)
+└── → analytics-service (log event)
 
-Client calls user-service → POST /api/users
 
-User is persisted to DB
+- Services are decoupled — a failure in notification or analytics does not affect core user flow  
+- Notification calls are asynchronous to simulate non-blocking user experience  
+- Logs and DB storage simulate real-world traceability and observability  
 
-user-service sends:
+## API Overview
 
-A notification request to notification-service
-
-A log event to analytics-service
-
-Each call is independent to ensure fault isolation between services.
-
-Folder Structure
-microservices-demo/
-├── user-service/
-├── notification-service/
-├── analytics-service/
-└── README.md
-
-Each service contains its own pom.xml, config, and business layers.
-
-How to Run
-Prerequisites
-Java 17+
-
-Maven 3.6+
-
-Git
-
-Steps
-Open three terminals and run each service:
-
-Terminal 1
-cd user-service
-./mvnw spring-boot:run
-
-Terminal 2
-cd notification-service
-./mvnw spring-boot:run
-
-Terminal 3
-cd analytics-service
-./mvnw spring-boot:run
-
-Test Endpoints
-Use Postman or curl to test the interaction.
-
-Create a user:
-curl -X POST http://localhost:8081/api/users \
--H "Content-Type: application/json" \
--d '{"name":"John Doe","email":"john@example.com","role":"USER"}'
-
-notification-service will print the simulated notification.
-analytics-service will log the event.
-
-REST API Summary
-user-service (localhost:8081)
-POST /api/users
-Body: { "name": "John", "email": "john@example.com", "role": "USER" }
-
+### user-service (localhost:8081)
+**POST /api/users**  
+Creates a user and triggers downstream services.  
+Request body:
+```json
+{
+  "name": "Alice",
+  "email": "alice@example.com",
+  "role": "ADMIN"
+}
+```
 notification-service (localhost:8082)
-POST /api/notifications?to=...&message=...
+POST /api/notifications?to=email&message=text
+Simulates sending a notification to a user.
 
 analytics-service (localhost:8083)
-POST /api/analytics?event=...
+POST /api/analytics?event=text
+Logs an analytics event (e.g., “User created: email”).
 
-Key Concepts Demonstrated
-Clean layered architecture with Controller → Service → Repository
-
-Inter-service communication using RestTemplate
-
-Fault isolation: one service failing does not crash others
-
-Asynchronous request handling using @Async
-
-Database interaction using Spring Data JPA + H2
-
-REST API validation and global exception handling
-
-Swagger UI documentation available (optional)
-
-How This Reflects Real-World Backend Work
-Each service encapsulates a single business domain and can be deployed independently
-
-Logging and notifications are handled as side-effect services to keep the core system responsive
-
-System is designed to scale horizontally and be extended (e.g., with messaging, auth, or gateway)
-
-Optional: Docker Integration
-You can extend this setup with:
-
-Dockerfile per service
-
-A docker-compose.yml to run all services together
-
-This is useful for deployment simulation and container orchestration practice.
-
-Author
+## Author
 Gaurav Solanki
 GitHub: https://github.com/GauravS0001
-LinkedIn: https://linkedin.com/in/gaurav-solanki-043734173
-
-License
-MIT
