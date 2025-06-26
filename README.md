@@ -68,8 +68,8 @@ analytics-service (localhost:8083)
 POST /api/analytics?event=text
 Logs an analytics event (e.g., “User created: email”).
 
+
 ## Author
 
-Gaurav Solanki 
+Gaurav Solanki  
 GitHub: https://github.com/GauravS0001
-
