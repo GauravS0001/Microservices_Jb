@@ -70,6 +70,7 @@ Logs an analytics event (e.g., “User created: email”).
 
 ## Author
 
-Gaurav Solanki  
+Gaurav Solanki 
+
 GitHub: https://github.com/GauravS0001
 
